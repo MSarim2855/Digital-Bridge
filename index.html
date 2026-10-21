@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Digital Bridge - Home</title>
+<link rel="icon" type="image/png" href="logo.png">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+:root {
+--primary-gradient: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+--secondary-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+--accent-gradient: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
+--glass-bg: rgba(255, 255, 255, 0.06);
+--glass-border: rgba(255, 255, 255, 0.08);
+--text-primary: #ffffff;
+--text-secondary: rgba(255, 255, 255, 0.95);
+--text-muted: rgba(255, 255, 255, 0.85);
+--text-vibrant: rgba(255, 255, 255, 0.98);
+--shadow-primary: 0 25px 50px rgba(0, 0, 0, 0.25);
+--shadow-glow: 0 0 30px rgba(59, 130, 246, 0.2);
+}
+
+.data-network {
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+pointer-events: none;
+z-index: -1;
+}
+.data-node {
+position: absolute;
+border-radius: 50%;
+background: radial-gradient(circle, rgba(59,130,246,0.8) 0%, rgba(59,130,246,0.2) 70%, transparent 100%);
+box-shadow: 0 0 20px rgba(59,130,246,0.4);
+animation: dataPulse 3s ease-in-out infinite;
+}
+.data-node::before {
+content: '';
+position: absolute;
+top: 50%;
+left: 50%;
+width: 40%;
+height: 40%;
+background: rgba(255,255,255,0.6);
+border-radius: 50%;
+transform: translate(-50%, -50%);
+animation: dataInnerPulse 3s ease-in-out infinite reverse;
+}
+.data-stream {
+position: absolute;
+height: 1px;
+background: linear-gradient(90deg, transparent, rgba(59,130,246,0.8), transparent);
+box-shadow: 0 0 10px rgba(59,130,246,0.3);
+transform-origin: left center;
+animation: dataStream 4s linear infinite;
+}
+.data-point {
+position: absolute;
+border-radius: 50%;
+background: radial-gradient(circle, rgba(99,102,241,0.9) 0%, transparent 70%);
+animation: dataFloat 15s linear infinite;
+box-shadow: 0 0 15px rgba(99,102,241,0.5);
+}
+
+@keyframes dataPulse {
+0%, 100% { transform: scale(1); opacity: 0.7; }
+50% { transform: scale(1.4); opacity: 1; }
+}
+@keyframes dataInnerPulse {
+0%, 100% { transform: translate(-50%, -50%) scale(0.6); opacity: 0.5; }
+50% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; }
+}
+@keyframes dataStream {
+0% { transform: scaleX(0); opacity: 0; }
+20% { opacity: 1; }
+80% { opacity: 1; }
+100% { transform: scaleX(2); opacity: 0; }
+}
+@keyframes dataFloat {
+0% {
+transform: translateY(100vh) translateX(0) rotate(0deg);
+opacity: 0;
+}
+10% { opacity: 1; }
+90% { opacity: 1; }
+100% {
+transform: translateY(-100vh) translateX(100px) rotate(360deg);
+opacity: 0;
+}
+}
+
+body {
+font-family: 'Inter', sans-serif;
+min-height: 100vh;
+overflow-x: hidden;
+position: relative;
+background:
+radial-gradient(ellipse 80% 50% at 20% 20%, rgba(30, 58, 138, 0.3) 0%, transparent 50%),
+radial-gradient(ellipse 60% 40% at 80% 80%, rgba(59, 130, 246, 0.25) 0%, transparent 50%),
+radial-gradient(ellipse 50% 30% at 40% 60%, rgba(99, 102, 241, 0.2) 0%, transparent 50%),
+linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+color: var(--text-primary);
+}
+
+nav {
+position: fixed;
+top: 0;
+width: 100%;
+z-index: 1000;
+background: rgba(15, 15, 35, 0.95);
+backdrop-filter: blur(30px);
+border-bottom: 1px solid var(--glass-border);
+padding: 1rem 0;
+}
+.nav-container {
+max-width: 1400px;
+margin: 0 auto;
+display: flex;
+justify-content: space-between;
+align-items: center;
+padding: 0 2rem;
+}
+.nav-logo {
+font-family: 'Space Grotesk', sans-serif;
+font-size: 1.5rem;
+font-weight: 700;
+background: var(--accent-gradient);
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+background-clip: text;
+}
+.nav-links {
+display: flex;
+gap: 2rem;
+align-items: center;
+}
+.nav-links a {
+color: var(--text-secondary);
+text-decoration: none;
+font-weight: 500;
+padding: 0.75rem 1.5rem;
+border-radius: 12px;
+transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+position: relative;
+font-size: 0.95rem;
+letter-spacing: 0.3px;
+}
+.nav-links a::before {
+content: '';
+position: absolute;
+top: 0;
+left: 0;
+right: 0;
+bottom: 0;
+background: var(--accent-gradient);
+border-radius: 12px;
+transform: scaleX(0);
+transform-origin: left;
+transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+z-index: -1;
+}
+.nav-links a:hover::before,
+.nav-links a.active::before {
+transform: scaleX(1);
+}
+.nav-links a:hover,
+.nav-links a.active {
+color: #ffffff;
+transform: translateY(-1px);
+box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+}
+.hamburger {
+display: none;
+flex-direction: column;
+cursor: pointer;
+gap: 4px;
+}
+.hamburger span {
+width: 25px;
+height: 3px;
+background: var(--text-primary);
+border-radius: 3px;
+transition: all 0.3s ease;
+}
+.main-content {
+  min-height: 100vh;
+  padding-top: 105px !important;
+  padding-bottom: 4rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+
+.hero-section {
+  text-align: center;
+  padding: 6rem 0 4rem 0 !important;
+  position: relative;
+}
+.hero-title {
+font-family: 'Space Grotesk', sans-serif;
+font-size: clamp(3.5rem, 8vw, 6.5rem);
+font-weight: 800;
+background: var(--accent-gradient);
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+background-clip: text;
+margin-bottom: 1.5rem;
+line-height: 1.1;
+letter-spacing: -2px;
+}
+.hero-subtitle {
+font-size: 1.4rem;
+color: var(--text-muted);
+max-width: 750px;
+margin: 0 auto 3.5rem;
+line-height: 1.8;
+}
+.cta-buttons {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 2rem;
+}
+.cta-primary, .cta-secondary {
+  padding: 1.2rem 3rem;
+  border-radius: 16px;
+  font-weight: 600;
+  font-size: 1.1rem;
+  text-decoration: none;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: 'Space Grotesk', sans-serif;
+}
+.cta-primary {
+  background: var(--accent-gradient);
+  color: white;
+  box-shadow: var(--shadow-glow);
+}
+.cta-primary:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(59, 130, 246, 0.4);
+}
+.cta-secondary {
+  background: transparent;
+  color: var(--text-vibrant);
+  border: 2px solid var(--glass-border);
+}
+.cta-secondary:hover {
+  background: var(--glass-bg);
+  border-color: rgba(59, 130, 246, 0.3);
+  transform: translateY(-2px);
+}
+
+
+.mission-section {
+  margin: 8rem 0;
+}
+.mission-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+  gap: 2.5rem;
+}
+.mission-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(30px);
+  border: 1px solid var(--glass-border);
+  border-radius: 24px;
+  padding: 3.5rem 3rem;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+}
+.mission-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: var(--accent-gradient);
+  transform: scaleX(0);
+  transition: transform 0.5s ease;
+  border-radius: 24px 24px 0 0;
+}
+.mission-card:hover::before {
+  transform: scaleX(1);
+}
+.mission-card:hover {
+  transform: translateY(-12px);
+  box-shadow: var(--shadow-primary), var(--shadow-glow);
+  border-color: rgba(59, 130, 246, 0.3);
+}
+.mission-icon {
+  font-size: 4.5rem;
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 2rem;
+  display: block;
+}
+.mission-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 2rem;
+  font-weight: 700;
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 1.5rem;
+}
+.mission-text {
+  color: var(--text-vibrant);
+  font-size: 1.2rem;
+  line-height: 1.8;
+}
+
+
+.impact-section {
+  margin: 8rem 0;
+  padding: 4rem 0;
+  text-align: center;
+}
+.section-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 800;
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 1rem;
+}
+.section-subtitle {
+  font-size: 1.35rem;
+  color: var(--text-muted);
+  max-width: 800px;
+  margin: 0 auto 4rem;
+  line-height: 1.7;
+}
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2.5rem;
+}
+.stat-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(30px);
+  border: 1px solid var(--glass-border);
+  border-radius: 24px;
+  padding: 4rem 2.5rem;
+  text-align: center;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: var(--accent-gradient);
+  transform: scaleX(0);
+  transition: transform 0.5s ease;
+}
+.stat-card:hover::before {
+  transform: scaleX(1);
+}
+.stat-card:hover {
+  transform: translateY(-12px);
+  box-shadow: var(--shadow-primary), var(--shadow-glow);
+}
+.stat-number {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(3rem, 8vw, 5rem);
+  font-weight: 800;
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 1.5rem;
+  display: block;
+}
+.stat-label {
+  font-size: 1.25rem;
+  color: var(--text-vibrant);
+  font-weight: 600;
+  line-height: 1.6;
+}
+
+
+.cta-section {
+  margin: 8rem 0;
+  text-align: center;
+  padding: 4rem 2rem;
+}
+.cta-content {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+
+footer {
+background: rgba(15, 15, 35, 0.95);
+backdrop-filter: blur(30px);
+text-align: center;
+padding: 3rem 2rem;
+color: var(--text-muted);
+border-top: 1px solid var(--glass-border);
+font-size: 1.1rem;
+margin-top: 4rem;
+}
+.footer-links {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin: 1.5rem 0;
+  flex-wrap: wrap;
+}
+.footer-links a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+.footer-links a:hover {
+  color: var(--text-primary);
+}
+
+
+@keyframes fadeInUp {
+from {
+opacity: 0;
+transform: translateY(40px);
+}
+to {
+opacity: 1;
+transform: translateY(0);
+}
+}
+
+
+@media (max-width: 1024px) {
+.mission-grid, .stats-grid {
+grid-template-columns: 1fr;
+}
+}
+@media (max-width: 768px) {
+.nav-links {
+display: none;
+position: absolute;
+top: 100%;
+left: 0;
+width: 100%;
+background: rgba(15, 15, 35, 0.98);
+backdrop-filter: blur(30px);
+flex-direction: column;
+padding: 1.5rem 0;
+gap: 0;
+}
+.nav-links.active {
+display: flex;
+}
+.nav-links a {
+padding: 1.2rem 2rem;
+width: 100%;
+text-align: center;
+}
+.hamburger {
+display: flex;
+}
+.main-content {
+padding: 0 1.5rem;
+padding-top: 90px;
+}
+.cta-buttons {
+flex-direction: column;
+align-items: center;
+}
+.cta-primary, .cta-secondary {
+width: 100%;
+max-width: 300px;
+justify-content: center;
+}
+}
+@media (max-width: 480px) {
+.hero-title {
+font-size: 2.8rem;
+letter-spacing: -1px;
+}
+.mission-card, .stat-card {
+padding: 2.5rem 2rem;
+}
+.section-title {
+font-size: 2.2rem;
+}
+}
+</style>
+<meta name="theme-color" content="#03060b">
+<link rel="stylesheet" href="bridge.css">
+</head>
+<body>
+
+<div class="data-network" id="dataNetwork"></div>
+
+<nav>
+  <div class="nav-container">
+    <div class="nav-logo">Digital Bridge</div>
+    <div class="hamburger" id="hamburger">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+    <div class="nav-links" id="navLinks">
+      <a href="index.html" class="active">Home</a>
+      <a href="secondary.html">Secondary Research</a>
+      <a href="primary.html">Primary Research</a>
+      <a href="action.html">Evidence of Action</a>
+      <a href="about.html">About Us</a>
+    </div>
+  </div>
+</nav>
+
+<div class="main-content">
+
+<section class="hero-section">
+  <h1 class="hero-title">Bridging the Digital Divide</h1>
+  <p class="hero-subtitle">
+    Empowering senior citizens with essential digital skills to thrive in the modern world. 
+    Comprehensive research, practical solutions, and community impact.
+  </p>
+  <div class="cta-buttons">
+    <a href="action.html" class="cta-primary">
+      <i class="fas fa-rocket"></i>
+      See Our Solutions
+    </a>
+    <a href="about.html"    <a href="about.html" class="cta-secondary">
+      <i class="fas fa-users"></i>
+      Meet Our Team
+    </a>
+  </div>
+</section>
+
+
+<section class="mission-section">
+  <div class="mission-grid">
+    <div class="mission-card">
+      <i class="fas fa-handshake info-icon mission-icon"></i>
+      <h3 class="mission-title">Our Mission</h3>
+      <p class="mission-text">
+        To eliminate digital exclusion among senior citizens by providing accessible training, 
+        intuitive tools, and community support that fosters digital confidence and independence.
+      </p>
+    </div>
+    
+    <div class="mission-card">
+      <i class="fas fa-chart-line info-icon mission-icon"></i>
+      <h3 class="mission-title">Our Research</h3>
+      <p class="mission-text">
+        Comprehensive primary and secondary research identifying the specific barriers 
+        faced by seniors and developing evidence-based solutions tailored to their needs.
+      </p>
+    </div>
+    
+    <div class="mission-card">
+      <i class="fas fa-lightbulb info-icon mission-icon"></i>
+      <h3 class="mission-title">Our Impact</h3>
+      <p class="mission-text">
+        Proven methodologies that have successfully increased digital literacy rates 
+        among seniors by 78% in pilot programs, reducing isolation and enhancing quality of life.
+      </p>
+    </div>
+  </div>
+</section>
+
+
+<section class="impact-section">
+  <h2 class="section-title">The Digital Divide Crisis</h2>
+  <p class="section-subtitle">
+    Millions of seniors are being left behind. Our research reveals the scale of the problem and our commitment to solving it.
+  </p>
+  
+  <div class="stats-grid">
+    <div class="stat-card">
+      <span class="stat-number">4.7M</span>
+      <div class="stat-label">UK Seniors Lacking Basic Digital Skills</div>
+    </div>
+    <div class="stat-card">
+      <span class="stat-number">68%</span>
+      <div class="stat-label">Seniors Struggle with Smartphones</div>
+    </div>
+    <div class="stat-card">
+      <span class="stat-number">25%</span>
+      <div class="stat-label">Global Elderly Digital Literacy Rate</div>
+    </div>
+    <div class="stat-card">
+      <span class="stat-number">€12B</span>
+      <div class="stat-label">Annual EU Cost of Digital Exclusion</div>
+    </div>
+    <div class="stat-card">
+      <span class="stat-number">82%</span>
+      <div class="stat-label">Seniors Want to Learn Digital Skills</div>
+    </div>
+    <div class="stat-card">
+      <span class="stat-number">3X</span>
+      <div class="stat-label">Faster Social Isolation Without Digital Access</div>
+    </div>
+  </div>
+</section>
+
+
+<section class="cta-section">
+  <div class="cta-content">
+    <h2 class="section-title">Ready to Bridge the Gap?</h2>
+    <p class="section-subtitle">
+      Explore our comprehensive research, proven solutions, and join the movement 
+      to empower seniors in the digital age.
+    </p>
+    <div class="cta-buttons">
+      <a href="secondary.html" class="cta-primary">
+        <i class="fas fa-search"></i>
+        Start with Research
+      </a>
+      <a href="action.html" class="cta-secondary">
+        <i class="fas fa-play"></i>
+        View Solutions
+      </a>
+    </div>
+  </div>
+</section>
+</div>
+
+<footer>
+  <div style="max-width: 1400px; margin: 0 auto; padding: 0 2rem;">
+    <p style="margin-bottom: 1rem; font-weight: 500;">
+      <i class="fas fa-bridge-water"></i> Digital Bridge Project
+    </p>
+    <div class="footer-links">
+      <a href="secondary.html">Secondary Research</a>
+      <a href="primary.html">Primary Research</a>
+      <a href="action.html">Evidence of Action</a>
+      <a href="about.html">About Us</a>
+      <a href="mailto:contact@digitalbridge.org">Contact</a>
+    </div>
+    <p style="margin-top: 1.5rem; font-size: 0.95rem;">
+      <i class="fas fa-copyright"></i> 2025 Digital Bridge Initiative | 
+      Empowering Seniors Through Digital Literacy
+    </p>
+  </div>
+</footer>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+  const hamburger = document.getElementById('hamburger');
+  const navLinks = document.getElementById('navLinks');
+  
+  hamburger.addEventListener('click', () => {
+    navLinks.classList.toggle('active');
+    hamburger.classList.toggle('active');
+  });
+  
+
+  document.querySelectorAll('.nav-links a').forEach(link => {
+    link.addEventListener('click', () => {
+      navLinks.classList.remove('active');
+      hamburger.classList.remove('active');
+    });
+  });
+
+
+  initProfessionalWallpaper();
+});
+
+
+function initProfessionalWallpaper() {
+  const container = document.getElementById('dataNetwork');
+
+
+  for (let i = 0; i < 35; i++) {
+    const node = document.createElement('div');
+    node.className = 'data-node';
+    const size = Math.random() * 12 + 4;
+    node.style.width = size + 'px';
+    node.style.height = size + 'px';
+    node.style.left = Math.random() * 100 + '%';
+    node.style.top = Math.random() * 100 + '%';
+    node.style.animationDelay = Math.random() * 3 + 's';
+    node.style.animationDuration = (2.5 + Math.random() * 2) + 's';
+    container.appendChild(node);
+  }
+
+
+  for (let i = 0; i < 25; i++) {
+    const stream = document.createElement('div');
+    stream.className = 'data-stream';
+    stream.style.left = Math.random() * 100 + '%';
+    stream.style.top = Math.random() * 100 + '%';
+    stream.style.width = (Math.random() * 300 + 150) + 'px';
+    stream.style.animationDelay = Math.random() * 4 + 's';
+    stream.style.animationDuration = (3 + Math.random() * 3) + 's';
+    container.appendChild(stream);
+  }
+
+
+  for (let i = 0; i < 30; i++) {
+    const point = document.createElement('div');
+    point.className = 'data-point';
+    const size = Math.random() * 6 + 2;
+    point.style.width = size + 'px';
+    point.style.height = size + 'px';
+    point.style.left = Math.random() * 100 + '%';
+    point.style.animationDelay = Math.random() * -15 + 's';
+    point.style.animationDuration = (12 + Math.random() * 8) + 's';
+    container.appendChild(point);
+  }
+}
+
+
+document.addEventListener('scroll', () => {
+  const scrolled = window.pageYOffset;
+  const parallax = document.querySelector('.data-network');
+  const speed = scrolled * 0.12;
+
+  if (parallax) {
+    parallax.style.transform = `translateY(${speed}px)`;
+  }
+});
+
+
+const observerOptions = {
+  threshold: 0.1,
+  rootMargin: '0px 0px -50px 0px'
+};
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.style.opacity = '1';
+      entry.target.style.transform = 'translateY(0)';
+    }
+  });
+}, observerOptions);
+
+
+document.querySelectorAll('.mission-card, .stat-card, .cta-section, .mission-section').forEach((card, index) => {
+  card.style.opacity = '0';
+  card.style.transform = 'translateY(50px)';
+  card.style.transition = `all 1s cubic-bezier(0.4, 0, 0.2, 1) ${index * 0.15}s`;
+  observer.observe(card);
+});
+
+
+window.addEventListener('load', () => {
+  document.body.classList.add('loaded');
+  setTimeout(() => {
+    document.querySelector('.data-network').style.opacity = '1';
+    document.querySelector('.hero-section').style.opacity = '1';
+    document.querySelector('.hero-section').style.transform = 'translateY(0)';
+  }, 500);
+});
+
+
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+  anchor.addEventListener('click', function (e) {
+    e.preventDefault();
+    document.querySelector(this.getAttribute('href')).scrollIntoView({
+      behavior: 'smooth'
+    });
+  });
+});
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="bridge.js"></script>
+</body>
+</html>

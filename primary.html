@@ -1,0 +1,1426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Primary Research</title>
+<link rel="icon" type="image/png" href="logo.png">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+:root {
+--primary-gradient: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+--secondary-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+--accent-gradient: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
+--glass-bg: rgba(255, 255, 255, 0.06);
+--glass-border: rgba(255, 255, 255, 0.08);
+--text-primary: #ffffff;
+--text-secondary: rgba(255, 255, 255, 0.92);
+--text-muted: rgba(255, 255, 255, 0.7);
+--text-vibrant: rgba(255, 255, 255, 0.98);
+--shadow-primary: 0 25px 50px rgba(0, 0, 0, 0.25);
+--shadow-glow: 0 0 30px rgba(59, 130, 246, 0.2);
+}
+
+
+embed[type="application/pdf"] {
+  filter: drop-shadow(0 4px 20px rgba(0,0,0,0.3));
+}
+
+
+@media (max-width: 768px) {
+  #inlinePdfModal {
+    padding: 1rem !important;
+  }
+  #inlinePdfModal > div {
+    max-width: 100% !important;
+    max-height: 100% !important;
+    border-radius: 16px !important;
+  }
+}
+
+.btn-control.fullscreen {
+  font-size: 0.85rem;
+}
+
+.btn-control.fullscreen:hover i {
+  transform: rotate(90deg);
+}
+
+.interview-video-container:-webkit-full-screen .interview-video,
+.interview-video-container:fullscreen .interview-video {
+  height: 100vh;
+  width: 100vw;
+  object-fit: contain;
+}
+
+.interview-video-container:-webkit-full-screen .interview-card,
+.interview-video-container:fullscreen .interview-card {
+  padding: 0 !important;
+  background: rgba(0,0,0,0.95);
+  border-radius: 0;
+  height: 100vh;
+  width: 100vw;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+}
+
+.interview-video-container:-webkit-full-screen .video-controls,
+.interview-video-container:fullscreen .video-controls {
+  opacity: 1 !important;
+  bottom: 20px;
+}
+
+.progress-container {
+  width: 100%;
+  height: 8px !important;
+  background: rgba(255,255,255,0.3);
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  cursor: pointer !important;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  padding: 2px;
+  box-sizing: content-box;
+}
+
+.progress-container:hover {
+  height: 12px !important;
+  background: rgba(255,255,255,0.5);
+  padding: 3px;
+}
+
+.progress-container:active {
+  transform: scaleY(1.2);
+}
+
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #3b82f6, #60a5fa);
+  border-radius: 2px;
+  width: 0%;
+  transition: width 0.1s linear;
+  position: relative;
+}
+
+.progress-bar::after {
+  content: '';
+  position: absolute;
+  right: -8px;
+  top: 50%;
+  width: 16px;
+  height: 16px;
+  background: rgba(255,255,255,0.9);
+  border-radius: 50%;
+  transform: translateY(-50%);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.progress-container:hover .progress-bar::after {
+  opacity: 1;
+}
+
+body {
+font-family: 'Inter', sans-serif;
+min-height: 100vh;
+overflow-x: hidden;
+position: relative;
+background:
+radial-gradient(ellipse 80% 50% at 20% 20%, rgba(30, 58, 138, 0.3) 0%, transparent 50%),
+radial-gradient(ellipse 60% 40% at 80% 80%, rgba(59, 130, 246, 0.25) 0%, transparent 50%),
+radial-gradient(ellipse 50% 30% at 40% 60%, rgba(99, 102, 241, 0.2) 0%, transparent 50%),
+linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+color: var(--text-primary);
+}
+.interview-video-container.playing .video-controls {
+  opacity: 1 !important;
+}
+
+.data-network {
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+pointer-events: none;
+z-index: -1;
+}
+.data-node {
+position: absolute;
+border-radius: 50%;
+background: radial-gradient(circle, rgba(59,130,246,0.8) 0%, rgba(59,130,246,0.2) 70%, transparent 100%);
+box-shadow: 0 0 20px rgba(59,130,246,0.4);
+animation: dataPulse 3s ease-in-out infinite;
+}
+.data-node::before {
+content: '';
+position: absolute;
+top: 50%;
+left: 50%;
+width: 40%;
+height: 40%;
+background: rgba(255,255,255,0.6);
+border-radius: 50%;
+transform: translate(-50%, -50%);
+animation: dataInnerPulse 3s ease-in-out infinite reverse;
+}
+
+.data-stream {
+position: absolute;
+height: 1px;
+background: linear-gradient(90deg, transparent, rgba(59,130,246,0.8), transparent);
+box-shadow: 0 0 10px rgba(59,130,246,0.3);
+transform-origin: left center;
+animation: dataStream 4s linear infinite;
+}
+
+.data-point {
+position: absolute;
+border-radius: 50%;
+background: radial-gradient(circle, rgba(99,102,241,0.9) 0%, transparent 70%);
+animation: dataFloat 15s linear infinite;
+box-shadow: 0 0 15px rgba(99,102,241,0.5);
+}
+
+@keyframes dataPulse {
+0%, 100% { transform: scale(1); opacity: 0.7; }
+50% { transform: scale(1.4); opacity: 1; }
+}
+@keyframes dataInnerPulse {
+0%, 100% { transform: translate(-50%, -50%) scale(0.6); opacity: 0.5; }
+50% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; }
+}
+@keyframes dataStream {
+0% { transform: scaleX(0); opacity: 0; }
+20% { opacity: 1; }
+80% { opacity: 1; }
+100% { transform: scaleX(2); opacity: 0; }
+}
+@keyframes dataFloat {
+0% {
+transform: translateY(100vh) translateX(0) rotate(0deg);
+opacity: 0;
+}
+10% { opacity: 1; }
+90% { opacity: 1; }
+100% {
+transform: translateY(-100vh) translateX(100px) rotate(360deg);
+opacity: 0;
+}
+}
+
+nav {
+position: fixed;
+top: 0;
+width: 100%;
+z-index: 1000;
+background: rgba(15, 15, 35, 0.95);
+backdrop-filter: blur(30px);
+border-bottom: 1px solid var(--glass-border);
+padding: 1rem 0;
+}
+.nav-container {
+max-width: 1400px;
+margin: 0 auto;
+display: flex;
+justify-content: space-between;
+align-items: center;
+padding: 0 2rem;
+}
+.nav-logo {
+font-family: 'Space Grotesk', sans-serif;
+font-size: 1.5rem;
+font-weight: 700;
+background: var(--accent-gradient);
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+background-clip: text;
+}
+.nav-links {
+display: flex;
+gap: 2rem;
+align-items: center;
+}
+.nav-links a {
+color: var(--text-secondary);
+text-decoration: none;
+font-weight: 500;
+padding: 0.75rem 1.5rem;
+border-radius: 12px;
+transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+position: relative;
+font-size: 0.95rem;
+letter-spacing: 0.3px;
+}
+.nav-links a::before {
+content: '';
+position: absolute;
+top: 0;
+left: 0;
+right: 0;
+bottom: 0;
+background: var(--accent-gradient);
+border-radius: 12px;
+transform: scaleX(0);
+transform-origin: left;
+transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+z-index: -1;
+}
+.nav-links a:hover::before,
+.nav-links a.active::before {
+transform: scaleX(1);
+}
+.nav-links a:hover,
+.nav-links a.active {
+color: #ffffff;
+transform: translateY(-1px);
+box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+}
+.hamburger {
+display: none;
+flex-direction: column;
+cursor: pointer;
+gap: 4px;
+}
+.hamburger span {
+width: 25px;
+height: 3px;
+background: var(--text-primary);
+border-radius: 3px;
+transition: all 0.3s ease;
+}
+
+.main-content {
+min-height: 100vh;
+padding-top: 100px;
+padding-bottom: 4rem;
+max-width: 1400px;
+margin: 0 auto;
+padding: 0 2rem;
+}
+.hero-section {
+text-align: center;
+padding: 5rem 0;
+}
+.hero-title {
+font-family: 'Space Grotesk', sans-serif;
+font-size: clamp(2.8rem, 6vw, 5rem);
+font-weight: 800;
+background: var(--accent-gradient);
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+background-clip: text;
+margin-bottom: 1.5rem;
+line-height: 1.1;
+}
+.hero-subtitle {
+font-size: 1.25rem;
+color: var(--text-muted);
+max-width: 700px;
+margin: 0 auto 3rem;
+line-height: 1.7;
+}
+
+.tabs-container {
+display: flex;
+justify-content: center;
+flex-wrap: wrap;
+gap: 1rem;
+margin-bottom: 4rem;
+}
+.tab-btn {
+background: var(--glass-bg);
+backdrop-filter: blur(15px);
+border: 1px solid var(--glass-border);
+color: var(--text-secondary);
+padding: 1rem 2.5rem;
+font-size: 1rem;
+font-weight: 600;
+border-radius: 50px;
+cursor: pointer;
+transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+position: relative;
+overflow: hidden;
+}
+.tab-btn::before {
+content: '';
+position: absolute;
+top: 0;
+left: -100%;
+width: 100%;
+height: 100%;
+background: var(--accent-gradient);
+transition: left 0.6s;
+z-index: -1;
+}
+.tab-btn:hover::before,
+.tab-btn.active::before {
+left: 0;
+}
+.tab-btn:hover,
+.tab-btn.active {
+color: #ffffff;
+border-color: transparent;
+transform: translateY(-3px);
+box-shadow: var(--shadow-primary), var(--shadow-glow);
+}
+
+.tab-content {
+display: none;
+animation: fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.tab-content.active {
+display: block;
+}
+.tab-content h2 {
+font-family: 'Space Grotesk', sans-serif;
+font-size: 2.8rem;
+font-weight: 700;
+background: var(--primary-gradient);
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+background-clip: text;
+margin-bottom: 2rem;
+text-align: center;
+}
+.tab-content p {
+  color: var(--text-vibrant);
+  font-size: 1.25rem;
+  line-height: 1.8;
+  margin-bottom: 4rem;
+  text-align: center;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.content-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(30px);
+  border: 1px solid var(--glass-border);
+  border-radius: 24px;
+  padding: 3rem;
+  margin: 5rem auto 3rem;
+  max-width: 900px;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.content-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--accent-gradient);
+  transform: scaleX(0);
+  transition: transform 0.5s ease;
+  border-radius: 24px 24px 0 0;
+}
+
+.content-card:hover::before {
+  transform: scaleX(1);
+}
+
+.content-card:hover {
+  transform: translateY(-10px);
+  box-shadow: var(--shadow-primary), var(--shadow-glow);
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
+.card-text {
+  color: var(--text-vibrant);
+  font-size: 1.2rem;
+  line-height: 1.85;
+  text-align: justify;
+}
+
+.charts-grid {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+gap: 3rem;
+margin-bottom: 5rem;
+}
+.chart-card {
+background: var(--glass-bg);
+backdrop-filter: blur(30px);
+border: 1px solid var(--glass-border);
+border-radius: 24px;
+padding: 3rem;
+text-align: center;
+transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+position: relative;
+overflow: hidden;
+}
+.chart-card::before {
+content: '';
+position: absolute;
+top: 0;
+left: 0;
+right: 0;
+height: 4px;
+background: var(--accent-gradient);
+transform: scaleX(0);
+transition: transform 0.5s ease;
+border-radius: 24px 24px 0 0;
+}
+.chart-card:hover::before {
+transform: scaleX(1);
+}
+.chart-card:hover {
+transform: translateY(-10px);
+box-shadow: var(--shadow-primary), var(--shadow-glow);
+border-color: rgba(59, 130, 246, 0.3);
+}
+.chart-container {
+position: relative;
+height: 400px;
+margin-bottom: 2rem;
+}
+.chart-canvas {
+filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.3));
+}
+
+.interview-grid {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+gap: 3rem;
+margin: 5rem 0;
+}
+.interview-card {
+background: var(--glass-bg);
+backdrop-filter: blur(30px);
+border: 1px solid var(--glass-border);
+border-radius: 24px;
+padding: 3rem;
+text-align: center;
+transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+position: relative;
+overflow: hidden;
+}
+.interview-card::before {
+content: '';
+position: absolute;
+top: 0;
+left: 0;
+right: 0;
+height: 4px;
+background: var(--accent-gradient);
+transform: scaleX(0);
+transition: transform 0.5s ease;
+border-radius: 24px 24px 0 0;
+}
+.interview-card:hover::before {
+transform: scaleX(1);
+}
+.interview-card:hover {
+transform: translateY(-10px);
+box-shadow: var(--shadow-primary), var(--shadow-glow);
+border-color: rgba(59, 130, 246, 0.3);
+}
+.interview-video-container {
+position: relative;
+width: 100%;
+height: 350px;
+margin-bottom: 2rem;
+border-radius: 20px;
+overflow: hidden;
+box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+.interview-video {
+width: 100%;
+height: 100%;
+border-radius: 20px;
+}
+.interview-header {
+font-family: 'Space Grotesk', sans-serif;
+font-size: 1.5rem;
+font-weight: 700;
+background: var(--primary-gradient);
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+background-clip: text;
+margin-bottom: 1rem;
+}
+.interview-meta {
+color: var(--text-muted);
+font-size: 1rem;
+margin-bottom: 1.5rem;
+display: flex;
+align-items: center;
+justify-content: center;
+gap: 1rem;
+flex-wrap: wrap;
+}
+.interview-meta i {
+color: var(--accent-gradient);
+}
+
+.physical-surveys {
+background: var(--glass-bg);
+backdrop-filter: blur(30px);
+border: 1px solid var(--glass-border);
+border-radius: 24px;
+padding: 4.5rem 3.5rem;
+text-align: center;
+margin: 5rem 0;
+position: relative;
+}
+.physical-surveys::before {
+content: '';
+position: absolute;
+top: -2px;
+left: 50%;
+width: 140px;
+height: 4px;
+background: var(--accent-gradient);
+border-radius: 2px;
+transform: translateX(-50%);
+}
+
+.survey-folder-btn {
+background: var(--accent-gradient);
+color: #ffffff;
+border: none;
+padding: 1.5rem 3.5rem;
+font-size: 1.1rem;
+font-weight: 700;
+font-family: 'Space Grotesk', sans-serif;
+border-radius: 50px;
+cursor: pointer;
+transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+letter-spacing: 1px;
+text-transform: uppercase;
+position: relative;
+overflow: hidden;
+box-shadow: var(--shadow-primary);
+margin-top: 2.5rem;
+}
+.survey-folder-btn::before {
+content: '';
+position: absolute;
+top: 0;
+left: -100%;
+width: 100%;
+height: 100%;
+background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+transition: left 0.7s;
+}
+.survey-folder-btn:hover::before {
+left: 100%;
+}
+.survey-folder-btn:hover {
+transform: translateY(-4px) scale(1.02);
+box-shadow: 0 30px 60px rgba(59, 130, 246, 0.4);
+}
+
+.download-buttons {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+gap: 2.5rem;
+margin: 5rem 0;
+max-width: 800px;
+margin-left: auto;
+margin-right: auto;
+}
+.download-btn {
+display: inline-flex;
+align-items: center;
+justify-content: center;
+gap: 1rem;
+padding: 1.5rem 2.5rem;
+font-size: 1rem;
+font-weight: 600;
+font-family: 'Space Grotesk', sans-serif;
+text-decoration: none;
+border-radius: 16px;
+transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+position: relative;
+overflow: hidden;
+text-transform: uppercase;
+letter-spacing: 0.5px;
+font-size: 0.95rem;
+}
+.download-btn.primary {
+background: var(--primary-gradient);
+color: #fff;
+box-shadow: var(--shadow-primary);
+}
+.download-btn.primary:hover {
+transform: translateY(-4px);
+box-shadow: 0 25px 50px rgba(30, 58, 138, 0.4);
+}
+.download-btn.secondary {
+background: var(--accent-gradient);
+color: #fff;
+box-shadow: var(--shadow-primary);
+}
+.download-btn.secondary:hover {
+transform: translateY(-4px);
+box-shadow: 0 25px 50px rgba(59, 130, 246, 0.4);
+}
+
+.survey-modal {
+display: none;
+position: fixed;
+z-index: 3000;
+left: 0;
+top: 0;
+width: 100%;
+height: 100%;
+background: rgba(0, 0, 0, 0.85);
+backdrop-filter: blur(30px);
+}
+.modal-content {
+background: rgba(15, 15, 35, 0.98);
+backdrop-filter: blur(40px);
+margin: 2% auto;
+padding: 0;
+border-radius: 24px;
+width: 95%;
+max-width: 1600px;
+max-height: 90vh;
+position: relative;
+border: 1px solid rgba(59, 130, 246, 0.3);
+box-shadow: 0 40px 100px rgba(0, 0, 0, 0.6);
+animation: modalSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+@keyframes modalSlideIn {
+from {
+opacity: 0;
+transform: translateY(-40px) scale(0.95);
+}
+to {
+opacity: 1;
+transform: translateY(0) scale(1);
+}
+}
+.modal-header {
+background: var(--primary-gradient);
+padding: 2.5rem 3rem;
+border-radius: 24px 24px 0 0;
+display: flex;
+justify-content: space-between;
+align-items: center;
+}
+.modal-title {
+font-family: 'Space Grotesk', sans-serif;
+font-size: 2rem;
+font-weight: 700;
+margin: 0
+}
+.close-modal {
+background: rgba(255, 255, 255, 0.15);
+border: none;
+color: white;
+font-size: 1.8rem;
+cursor: pointer;
+width: 50px;
+height: 50px;
+border-radius: 50%;
+display: flex;
+align-items: center;
+justify-content: center;
+transition: all 0.3s ease;
+}
+.close-modal:hover {
+background: rgba(255, 255, 255, 0.25);
+transform: rotate(90deg) scale(1.1);
+}
+.modal-body {
+max-height: 70vh;
+overflow-y: auto;
+padding: 3rem;
+padding-bottom: 1.5rem;
+}
+.modal-body::-webkit-scrollbar {
+width: 10px;
+}
+.modal-body::-webkit-scrollbar-track {
+background: rgba(30, 30, 60, 0.5);
+}
+.modal-body::-webkit-scrollbar-thumb {
+background: var(--accent-gradient);
+border-radius: 5px;
+}
+.survey-counter {
+color: #10b981;
+font-size: 1.4rem;
+font-weight: 600;
+margin-bottom: 2.5rem;
+text-align: center;
+font-family: 'Space Grotesk', sans-serif;
+}
+.modal-surveys-grid {
+display: grid;
+grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+gap: 2rem;
+}
+.modal-survey-card {
+background: var(--glass-bg);
+backdrop-filter: blur(20px);
+border: 1px solid var(--glass-border);
+padding: 2rem;
+border-radius: 20px;
+text-align: center;
+transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+cursor: pointer;
+position: relative;
+overflow: hidden;
+}
+.modal-survey-card::before {
+content: '';
+position: absolute;
+top: 0;
+left: 0;
+right: 0;
+height: 3px;
+background: var(--accent-gradient);
+transform: scaleX(0);
+transition: transform 0.4s ease;
+}
+.modal-survey-card:hover::before {
+transform: scaleX(1);
+}
+.modal-survey-card:hover {
+transform: translateY(-8px) scale(1.02);
+box-shadow: var(--shadow-primary), var(--shadow-glow);
+border-color: rgba(59, 130, 246, 0.4);
+}
+.survey-preview {
+width: 100%;
+height: 240px;
+background: var(--primary-gradient);
+border-radius: 16px;
+margin-bottom: 1.5rem;
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+color: white;
+font-size: 3.5rem;
+position: relative;
+overflow: hidden;
+}
+.survey-preview::after {
+content: attr(data-pdf);
+position: absolute;
+bottom: 1.2rem;
+font-size: 0.85rem;
+opacity: 0.85;
+font-weight: 500;
+}
+.modal-survey-card h4 {
+color: var(--text-primary);
+margin: 0 0 1rem 0;
+font-size: 1.25rem;
+font-weight: 600;
+}
+.modal-survey-card p {
+color: var(--text-muted);
+font-size: 0.95rem;
+margin: 0;
+line-height: 1.6;
+}
+
+footer {
+background: rgba(15, 15, 35, 0.95);
+backdrop-filter: blur(30px);
+text-align: center;
+padding: 3rem;
+color: var(--text-muted);
+border-top: 1px solid var(--glass-border);
+font-size: 1rem;
+}
+
+@keyframes fadeInUp {
+from {
+opacity: 0;
+transform: translateY(40px);
+}
+to {
+opacity: 1;
+transform: translateY(0);
+}
+}
+
+@media (max-width: 1024px) {
+.charts-grid {
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+  gap: 2.5rem;
+}
+.interview-grid {
+  grid-template-columns: 1fr;
+  gap: 2.5rem;
+}
+.interview-video-container {
+  height: 300px;
+}
+}
+
+@media (max-width: 768px) {
+.nav-links {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background: rgba(15, 15, 35, 0.98);
+  backdrop-filter: blur(30px);
+  flex-direction: column;
+  padding: 1.5rem 0;
+  gap: 0;
+}
+.nav-links.active {
+  display: flex;
+}
+.nav-links a {
+  padding: 1.2rem 2rem;
+  width: 100%;
+  text-align: center;
+}
+.hamburger {
+  display: flex;
+}
+.main-content {
+  padding: 0 1.5rem;
+  padding-top: 90px;
+}
+.download-buttons {
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+.modal-surveys-grid {
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+.interview-video-container {
+  height: 250px;
+}
+}
+
+@media (max-width: 480px) {
+.hero-title {
+  font-size: 2.8rem;
+}
+.physical-surveys {
+  padding: 3rem 2rem;
+}
+.modal-surveys-grid {
+  grid-template-columns: 1fr;
+}
+.chart-card {
+  padding: 2.5rem 1.5rem;
+}
+.interview-card {
+  padding: 2rem 1.5rem;
+}
+}
+</style>
+<meta name="theme-color" content="#03060b">
+<link rel="stylesheet" href="bridge.css">
+</head>
+<body>
+
+<div class="data-network" id="dataNetwork"></div>
+<nav>
+  <div class="nav-container">
+    <div class="nav-logo">Digital Bridge</div>
+    <div class="hamburger" id="hamburger">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+<div 
+  class="nav-links" id="navLinks">
+    <a href="index.html">Home</a>
+    <a href="secondary.html">Secondary Research</a>
+    <a href="primary.html" class="active">Primary Research</a>
+    <a href="action.html">Evidence of Action</a>
+    <a href="about.html">About Us</a>  
+</div>
+  </div>
+</nav>
+<div class="main-content">
+  <section class="hero-section">
+    <h1 class="hero-title">Primary Research</h1>
+    <p class="hero-subtitle">
+      Comprehensive insights from direct engagement with senior citizens, 
+      delivering authentic data on digital technology adoption and challenges.
+    </p>
+  </section>
+  <div class="tabs-container">
+    <button class="tab-btn active" onclick="showTab('survey')">
+      <i class="fas fa-chart-bar"></i> Surveys
+    </button>
+    <button class="tab-btn" onclick="showTab('interviews')">
+      <i class="fas fa-microphone"></i> Interviews
+    </button>
+    <button class="tab-btn" onclick="showTab('observation')">
+      <i class="fas fa-eye"></i> Observation
+    </button>
+  </div>
+  
+  
+  <div class="tab-content active" id="survey">
+    <h2>Quantitative Survey Analysis</h2>
+    <p>
+      Detailed statistical analysis from 250+ senior citizen respondents, 
+      identifying key patterns, challenges, and opportunities in digital adoption.
+    </p>
+    <div class="charts-grid">
+      <div class="chart-card">
+        <div class="chart-container">
+          <canvas id="chart1" class="chart-canvas"></canvas>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-container">
+          <canvas id="chart2" class="chart-canvas"></canvas>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-container">
+          <canvas id="chart3" class="chart-canvas"></canvas>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-container">
+          <canvas id="chart4" class="chart-canvas"></canvas>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-container">
+          <canvas id="chart5" class="chart-canvas"></canvas>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-container">
+          <canvas id="chart6" class="chart-canvas"></canvas>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-container">
+          <canvas id="chart7" class="chart-canvas"></canvas>
+        </div>
+      </div>
+    </div>
+    
+    <div class="physical-surveys">
+      <h2>Physical Survey Collection</h2>
+      <p style="font-size: 1.2rem; margin-bottom: 2.5rem;">
+        <strong>74 authentic handwritten responses</strong> <br>
+        High-resolution scans preserving original respondent data and insights
+      </p>
+      <button class="survey-folder-btn" onclick="openSurveyModal()">
+        <i class="fas fa-folder-open"></i> Access 74 Physical Surveys
+      </button>
+    </div>
+    <div class="download-buttons">
+      <a href="https://forms.gle/8n65vCeYEWvUen9B6" target="_blank" class="download-btn primary">
+        <i class="fas fa-external-link-alt"></i> Live Survey Form
+      </a>
+      <a href="survey_data.xlsx" class="download-btn secondary">
+        <i class="fas fa-download"></i> Complete Dataset
+      </a>
+    </div>
+  </div>
+
+  
+  <div class="tab-content" id="interviews">
+    <h2>Qualitative Interviews</h2>
+    <p>
+      In-depth conversations with software developers providing expert insights 
+      into digital technology challenges faced by senior citizens and potential solutions.
+    </p>
+
+
+<div class="interview-grid">
+  
+  <div class="interview-card">
+    <div class="interview-video-container">
+      <iframe 
+        class="interview-video"
+        src="https://www.youtube.com/embed/0tbApTcUUSg" 
+        title="Systems International Interview"
+        frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        referrerpolicy="strict-origin-when-cross-origin"
+        allowfullscreen>
+      </iframe>
+    </div>
+    <div class="interview-header">Systems International</div>
+    <div class="interview-meta">
+      <span><i class="fas fa-building"></i> Systems International</span>
+      <span><i class="fas fa-code"></i> Software Development Team</span>
+      <span><i class="fas fa-clock"></i> ~12 min</span>
+    </div>
+  </div>
+
+  
+  <div class="interview-card">
+    <div class="interview-video-container">
+      <iframe 
+        class="interview-video"
+        src="https://www.youtube.com/embed/i3lSrklNZew" 
+        title="UVAS Interview"
+        frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        referrerpolicy="strict-origin-when-cross-origin"
+        allowfullscreen>
+      </iframe>
+    </div>
+    <div class="interview-header">UVAS Research Team</div>
+    <div class="interview-meta">
+      <span><i class="fas fa-university"></i> University of Veterinary & Animal Sciences</span>
+      <span><i class="fas fa-users"></i> Research Division</span>
+      <span><i class="fas fa-clock"></i> ~10 min</span>
+    </div>
+  </div>
+
+  
+  <div class="interview-card">
+    <div class="interview-video-container">
+      <iframe 
+        class="interview-video"
+        src="https://www.youtube.com/embed/ucmHYUdappk"
+        title="Mubeen Khan Interview"
+        frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        referrerpolicy="strict-origin-when-cross-origin"
+        allowfullscreen>
+      </iframe>
+    </div>
+    <div class="interview-header">Mubeen Khan</div>
+    <div class="interview-meta">
+      <span><i class="fas fa-building"></i> Gosaac</span>
+      <span><i class="fas fa-code"></i> Software Developer</span>
+      <span><i class="fas fa-clock"></i> ~15 min</span>
+    </div>
+  </div>
+</div>
+  </div>
+
+  
+  <div class="tab-content" id="observation">
+    <h2>Behavioral Observation</h2>
+    <div class="content-card">
+      <div class="card-text">
+        <p>
+          Based on the surveys and our interviews with software developers, we observed several clear patterns about senior citizens and their use of digital technology.
+          Developers highlighted that senior citizens face common challenges such as difficulty understanding complex interfaces, remembering steps, and a general lack of confidence when using digital devices.
+          Technologies like AI and voice assistance were frequently mentioned as solutions that can make usage easier by reducing the need for typing and complicated navigation.
+        </p>
+        <p>
+          It was consistently observed that seniors should first learn basic digital skills such as making calls, sending messages, and using simple apps before moving        to more advanced features. From the surveys, we observed that many seniors struggle with small text, confusing layouts, and too many options in apps, which makes them avoid using technology.
+        </p>
+        <p>
+          Additionally, both the interviews and survey responses showed that seniors learn best through in-person or blended training methods, as they prefer step-by-step guidance and practical demonstration rather than fully online learning.
+          Overall, we observed that while senior citizens are interested in using technology, they require simpler designs, supportive features, and proper guidance to use it effectively.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div id="surveyModal" class="survey-modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2 class="modal-title">
+        <i class="fas fa-file-alt"></i> Physical Surveys Archive
+      </h2>
+      <button class="close-modal" onclick="closeSurveyModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="survey-counter" id="modalSurveyCounter">
+        Initializing archive...
+      </div>
+      <div class="modal-surveys-grid" id="modalSurveysGrid">
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p><i class="fas fa-copyright"></i> 2025 Digital Bridge Project | Professional Primary Research Portal</p>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+  const hamburger = document.getElementById('hamburger');
+  const navLinks = document.getElementById('navLinks');
+  hamburger.addEventListener('click', () => {
+    navLinks.classList.toggle('active');
+    hamburger.classList.toggle('active');
+  });
+
+  document.querySelectorAll('.nav-links a').forEach(link => {
+    link.addEventListener('click', () => {
+      navLinks.classList.remove('active');
+      hamburger.classList.remove('active');
+    });
+  });
+
+
+  initProfessionalWallpaper();
+
+
+  setTimeout(() => initProfessionalCharts(), 800);
+});
+
+
+function initProfessionalWallpaper() {
+  const container = document.getElementById('dataNetwork');
+
+
+  for (let i = 0; i < 30; i++) {
+    const node = document.createElement('div');
+    node.className = 'data-node';
+    const size = Math.random() * 10 + 4;
+    node.style.width = size + 'px';
+    node.style.height = size + 'px';
+    node.style.left = Math.random() * 100 + '%';
+    node.style.top = Math.random() * 100 + '%';
+    node.style.animationDelay = Math.random() * 3 + 's';
+    node.style.animationDuration = (2.5 + Math.random() * 2) + 's';
+    container.appendChild(node);
+  }
+
+
+  for (let i = 0; i < 20; i++) {
+    const stream = document.createElement('div');
+    stream.className = 'data-stream';
+    stream.style.left = Math.random() * 100 + '%';
+    stream.style.top = Math.random() * 100 + '%';
+    stream.style.width = (Math.random() * 250 + 120) + 'px';
+    stream.style.animationDelay = Math.random() * 4 + 's';
+    stream.style.animationDuration = (3 + Math.random() * 3) + 's';
+    container.appendChild(stream);
+  }
+
+
+  for (let i = 0; i < 25; i++) {
+    const point = document.createElement('div');
+    point.className = 'data-point';
+    const size = Math.random() * 5 + 2;
+    point.style.width = size + 'px';
+    point.style.height = size + 'px';
+    point.style.left = Math.random() * 100 + '%';
+    point.style.animationDelay = Math.random() * -15 + 's';
+    point.style.animationDuration = (12 + Math.random() * 8) + 's';
+    container.appendChild(point);
+  }
+}
+
+
+function initProfessionalCharts() {
+  const chartData = [
+    { title: 'Digital Skills Importance', data: [65, 30, 5], labels: ['Very Important', 'Somewhat', 'Not Important'], color: 'rgba(59, 130, 246, 0.8)' },
+    { title: 'Expected Life Impact', data: [72.5, 22.5, 5.0], labels: ['Significant', 'Moderate', 'Minimal'], color: 'rgba(99, 102, 241, 0.8)' },
+    { title: 'Enjoy Learning Tech?', data: [63.7, 27.5, 8.8], labels: ['Yes', 'Maybe', 'No'], color: 'rgba(16, 185, 129, 0.8)' },
+    { title: 'Devices Too Complex?', data: [42.5, 40.0, 17.5], labels: ['Yes', 'Maybe', 'No'], color: 'rgba(245, 158, 11, 0.8)' },
+    { title: 'Main Challenges', data: [50.0, 23.8, 26.2], labels: ['Complexity', 'Forgetting', 'No Guide'], color: 'rgba(239, 68, 68, 0.8)' },
+    { title: 'Confidence Level', data: [26.9, 42.3, 25.6, 5.1], labels: ['Low', 'Slight', 'Moderate', 'High'], color: 'rgba(168, 85, 247, 0.8)' },
+    { title: 'Need Assistance', data: [31.2, 52.5, 16.2], labels: ['Often', 'Sometimes', 'Rarely'], color: 'rgba(34, 197, 94, 0.8)' }
+  ];
+
+  chartData.forEach((chart, i) => {
+    const ctx = document.getElementById(`chart${i + 1}`).getContext('2d');
+
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: chart.labels,
+        datasets: [{
+          label: chart.title,
+          data: chart.data,
+          backgroundColor: chart.color + '40',
+          borderColor: chart.color,
+          borderWidth: 2,
+          borderRadius: 12,
+          borderSkipped: false,
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          x: {
+            beginAtZero: true,
+            max: 100,
+            grid: { color: 'rgba(255,255,255,0.08)' },
+            ticks: {
+              color: 'rgba(255,255,255,0.7)',
+              font: { size: 12, weight: '500' }
+            }
+          },
+          y: {
+            grid: { display: false },
+            ticks: {
+              color: '#ffffff',
+              font: { size: 13, weight: '600' }
+            }
+          }
+        },
+        plugins: {
+          legend: { display: false },
+          title: {
+            display: true,
+            text: chart.title,
+            color: '#ffffff',
+            font: { size: 20, weight: '800', family: 'Space Grotesk' },
+            padding: { top: 25, bottom: 30 }
+          }
+        },
+        animation: {
+          duration: 2000,
+          easing: 'easeOutQuart'
+        }
+      }
+    });
+  });
+}
+
+
+function showTab(tabId) {
+  document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+  document.querySelector(`[onclick="showTab('${tabId}')"]`).classList.add('active');
+
+  document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+  document.getElementById(tabId).classList.add('active');
+}
+
+
+function openSurveyModal() {
+  document.getElementById('surveyModal').style.display = 'block';
+  document.body.style.overflow = 'hidden';
+  loadAllSurveys();
+}
+
+function closeSurveyModal() {
+  document.getElementById('surveyModal').style.display = 'none';
+  document.body.style.overflow = 'auto';
+}
+
+
+function loadAllSurveys() {
+  const grid = document.getElementById('modalSurveysGrid');
+  const counter = document.getElementById('modalSurveyCounter');
+
+  grid.innerHTML = '';
+  counter.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading archive...';
+
+  for (let i = 1; i <= 74; i++) {
+    setTimeout(() => {
+      const surveyCard = createModalSurveyCard(i);
+      grid.appendChild(surveyCard);
+      counter.innerHTML = `<i class="fas fa-check-circle"></i> Loaded ${i}/74`;
+
+      if (i === 74) {
+        setTimeout(() => {
+          counter.innerHTML = '<i class="fas fa-database"></i> ✅ Full archive ready!';
+          counter.style.color = '#10b981';
+        }, 400);
+      }
+    }, i * 25);
+  }
+}
+
+function createModalSurveyCard(surveyNumber) {
+  const card = document.createElement('div');
+  card.className = 'modal-survey-card';
+  
+  const pdfUrl = `Physical_Surveys1/Digital Bridge Survey - ${surveyNumber}.pdf`;
+  card.onclick = function() {
+    window.open(pdfUrl, '_blank');
+  };
+
+  card.innerHTML = `
+    <div class="survey-preview" data-pdf="Survey #${String(surveyNumber).padStart(3, '0')}.pdf">
+      <i class="fas fa-file-pdf" style="font-size: 4.5rem; color: #ffffff;"></i>
+    </div>
+    <h4>Survey #${String(surveyNumber).padStart(3, '0')}</h4>
+    <p style="color: var(--text-muted);">Click here to download</p>
+  `;
+
+  return card;
+}
+
+
+window.onclick = function(event) {
+  const modal = document.getElementById('surveyModal');
+  if (event.target === modal) {
+    closeSurveyModal();
+  }
+};
+
+document.addEventListener('keydown', function(event) {
+  if (event.key === 'Escape') {
+    closeSurveyModal();
+  }
+});
+
+
+document.addEventListener('scroll', () => {
+  const scrolled = window.pageYOffset;
+  const parallax = document.querySelector('.data-network');
+  const speed = scrolled * 0.15;
+
+  if (parallax) {
+    parallax.style.transform = `translateY(${speed}px)`;
+  }
+});
+
+
+const observerOptions = {
+  threshold: 0.1,
+  rootMargin: '0px 0px -100px 0px'
+};
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.style.opacity = '1';
+      entry.target.style.transform = 'translateY(0)';
+    }
+  });
+}, observerOptions);
+
+
+document.querySelectorAll('.chart-card, .interview-card').forEach((card, index) => {
+  card.style.opacity = '0';
+  card.style.transform = 'translateY(50px)';
+  card.style.transition = `all 1s cubic-bezier(0.4, 0, 0.2, 1) ${index * 0.15}s`;
+  observer.observe(card);
+});
+
+
+window.addEventListener('load', () => {
+  document.body.classList.add('loaded');
+  setTimeout(() => {
+    document.querySelector('.data-network').style.opacity = '1';
+   }, 1000);
+});
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="bridge.js"></script>
+</body>
+</html>
